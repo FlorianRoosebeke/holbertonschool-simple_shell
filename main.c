@@ -18,7 +18,11 @@ int main(void)
 			printf("\n");
 			break;
 		}
-		lineprt[r - 1] = '\0';
+		if (r > 0 && lineprt[r - 1] == '\n')
+			lineprt[r - 1] = '\0';
+		if (lineprt[0] == '\0')
+			continue;
+
 		pid = fork();
 		if (pid == 0)
 		{
