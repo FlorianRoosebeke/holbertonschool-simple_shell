@@ -31,7 +31,7 @@ int main(void)
 			continue;
 
 		pid = fork();
-			if (pid == 0)
+		if (pid == 0)
 		{
 			argv[0] = lineprt;
 			argv[1] = NULL;
@@ -42,8 +42,7 @@ int main(void)
 		else if (pid > 0)
 			wait(&status);
 		else
-		perror("fork");
-
+			perror("fork");
 	}
 	free(lineprt);
 	return (0);
