@@ -1,15 +1,13 @@
 #include "main.h"
 
-/**
- * main - PID
- *
- * Return: Always 0.
- */
 int main(void)
 {
 	char *lineprt = NULL;
 	size_t n = 0;
 	ssize_t r;
+	pid_t pid;
+	int status;
+	char *argv[2];
 
 	while (1)
 	{
@@ -21,7 +19,19 @@ int main(void)
 			break;
 		}
 		lineprt[r - 1] = '\0';
-		printf("commande: %s\n", lineprt);
+		pid = fork();
+		if (pid == 0)
+		{
+			argv[0] = lineprt;
+			argv[1] = NULL;
+			execve(lineprt, argv, NULL);
+			perror("Error");
+			exit(1);
+		}
+		else if (pid > 0)
+			wait(&status);
+		else
+			perror("fork");
 	}
 	free(lineprt);
 	return (0);
