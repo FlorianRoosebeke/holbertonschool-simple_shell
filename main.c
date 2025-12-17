@@ -11,22 +11,19 @@ int main(void)
 	size_t n = 0;
 	ssize_t r;
 
+	signal(SIGINT, handle_sigint);
+
 	while (1)
 	{
 		display_prompt();
 
 		r = read_line(&line, &n);
 		if (r == -1)
-		{
-			printf("vgvhuj");
 			break;
-		}
 
-		if (!clean_line(line, r))
-		{
-			free(line);
+		if (clean_line(line, r) == 0)
 			continue;
-		}
+
 		execute_command(line);
 	}
 
