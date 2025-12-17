@@ -13,6 +13,12 @@ void execute_command(char *line)
 	if (splitCommand(line, argv) == 0)
 		return;
 
+	if (strcmp(argv[0], "env") == 0)
+	{
+		handle_env();
+		return;
+	}
+
 	pid = fork();
 	if (pid == 0)
 	{
