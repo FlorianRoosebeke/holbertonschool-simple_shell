@@ -11,6 +11,8 @@ int main(void)
 	size_t n = 0;
 	ssize_t r;
 
+	signal(SIGINT, handle_sigint);
+
 	while (1)
 	{
 		display_prompt();
@@ -19,7 +21,7 @@ int main(void)
 		if (r == -1)
 			break;
 
-		if (!clean_line(line, r))
+		if (clean_line(line, r) == 0)
 			continue;
 
 		execute_command(line);
