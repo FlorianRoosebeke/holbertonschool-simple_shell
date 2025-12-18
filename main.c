@@ -10,6 +10,7 @@ int main(void)
 	char *line = NULL;
 	size_t n = 0;
 	ssize_t r;
+	int last_status = 0;
 
 	signal(SIGINT, handle_sigint);
 
@@ -24,9 +25,9 @@ int main(void)
 		if (clean_line(line, r) == 0)
 			continue;
 
-		execute_command(line);
+		last_status = execute_command(line);
 	}
 
 	free(line);
-	return (0);
+	return (last_status);
 }

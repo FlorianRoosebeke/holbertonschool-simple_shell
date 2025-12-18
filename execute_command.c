@@ -23,7 +23,7 @@ int execute_command(char *line)
 	if (strcmp(argv[0], "env") == 0)
 	{
 		handle_env();
-		return (1);
+		return (0);
 	}
 
 	pid = fork();
