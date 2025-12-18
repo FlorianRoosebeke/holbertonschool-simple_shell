@@ -20,6 +20,12 @@ int execute_command(char *line)
 		free(line);
 		exit(0);
 	}
+	if (strcmp(argv[0], "env") == 0)
+	{
+		handle_env();
+		return;
+	}
+
 	pid = fork();
 	if (pid == 0)
 	{

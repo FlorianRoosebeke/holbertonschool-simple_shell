@@ -11,11 +11,13 @@
 #include <signal.h>
 
 
+extern char **environ;
 void display_prompt(void);
 ssize_t read_line(char **line, size_t *n);
 int clean_line(char *line, ssize_t r);
 int execute_command(char *line);
 int splitCommand(char *input, char **argv);
 void handle_sigint(int signal);
+void handle_env(void);
 
 #endif
