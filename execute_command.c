@@ -32,6 +32,7 @@ int execute_command(char *line)
 		wait(&status);
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
+		return (1);
 	}
 	else
 	{
