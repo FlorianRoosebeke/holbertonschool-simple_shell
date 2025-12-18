@@ -3,15 +3,17 @@
 /**
  * execute_command - Forks and executes a command using execve.
  * @line: The command line to execute.
+ *
+ * Return: The exit status of the executed command, or 1 on error.
  */
-void execute_command(char *line)
+int execute_command(char *line)
 {
 	pid_t pid;
 	int status;
 	char *argv[128];
 
 	if (splitCommand(line, argv) == 0)
-		return;
+		return (0);
 
 	if (strcmp(argv[0], "exit") == 0)
 	{
@@ -23,10 +25,15 @@ void execute_command(char *line)
 	{
 		execve(argv[0], argv, NULL);
 		perror("Error");
-		exit(1);
+		exit(127);
 	}
 	else if (pid > 0)
+	{
 		wait(&status);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+	}
 	else
 		perror("fork");
+	return (1);
 }
