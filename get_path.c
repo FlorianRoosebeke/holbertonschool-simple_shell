@@ -43,5 +43,6 @@ char **get_path(char **envp)
 		j++;
 	}
 	tokens[j] = NULL;
+	free(path_copy);
 	return (tokens);
 }

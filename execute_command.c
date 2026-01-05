@@ -42,9 +42,11 @@ void execute_command(char *line, char **envp)
 				wait(&status);
 			else
 				perror("fork");
+			free(paths);
 			return;
 		}
 		i++;
 	}
 	printf("%s: command not found\n", argv[0]);
+	free(paths);
 }
