@@ -5,8 +5,10 @@
  * @cmd: Command path to execute
  * @argv: Arguments array
  * @envp: Environment variables
+ *
+ * Return: Exit status of the command
  */
-void exec_cmd(char *cmd, char **argv, char **envp)
+int exec_cmd(char *cmd, char **argv, char **envp)
 {
 	pid_t pid;
 	int status;
@@ -16,53 +18,74 @@ void exec_cmd(char *cmd, char **argv, char **envp)
 	{
 		execve(cmd, argv, envp);
 		perror("Error");
-		exit(1);
+		exit(127);
 	}
 	else if (pid > 0)
+	{
 		wait(&status);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+	}
 	else
 		perror("fork");
+	return (127);
 }
 
 /**
  * exec_from_path - Searches and executes command from PATH
  * @argv: Arguments array
  * @envp: Environment variables
+ *
+ * Return: Exit status of the command, or 127 if not found
  */
-void exec_from_path(char **argv, char **envp)
+int exec_from_path(char **argv, char **envp)
 {
 	char full_path[1024], **paths;
-	int i = 0;
+	int i = 0, status;
+	pid_t pid;
 
 	paths = get_path(envp);
-	while (paths[i])
+	pid = fork();
+	if (pid == 0)
 	{
-		snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
-		if (access(full_path, X_OK) == 0)
+		while (paths && paths[i])
 		{
-			exec_cmd(full_path, argv, envp);
-			free(paths[0]);
-			free(paths);
-			return;
+			snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
+			if (access(full_path, X_OK) == 0)
+				execve(full_path, argv, envp);
+			i++;
 		}
-		i++;
+		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+		exit(127);
 	}
-	fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-	free(paths[0]);
-	free(paths);
+	else if (pid > 0)
+	{
+		wait(&status);
+		if (paths)
+			free(paths[0]), free(paths);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+	}
+	else
+		perror("fork");
+	return (127);
 }
 
 /**
  * execute_command - Forks and executes a command using execve.
  * @line: The command line to execute.
  * @envp: Environment variables.
+ *
+ * Return: Exit status of the command
  */
-void execute_command(char *line, char **envp)
+int execute_command(char *line, char **envp)
 {
 	char *argv[1024];
+	pid_t pid;
+	int status;
 
 	if (splitCommand(line, argv) == 0)
-		return;
+		return (0);
 
 	if (strcmp(argv[0], "exit") == 0)
 	{
@@ -72,19 +95,29 @@ void execute_command(char *line, char **envp)
 	if (strcmp(argv[0], "env") == 0)
 	{
 		handle_env(envp);
-		return;
+		return (0);
 	}
 
 	if (strchr(argv[0], '/') != NULL)
 	{
 		if (access(argv[0], X_OK) == 0)
+			return (exec_cmd(argv[0], argv, envp));
+		pid = fork();
+		if (pid == 0)
 		{
-			exec_cmd(argv[0], argv, envp);
-			return;
+			fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+			exit(127);
 		}
-		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-		return;
+		else if (pid > 0)
+		{
+			wait(&status);
+			if (WIFEXITED(status))
+				return (WEXITSTATUS(status));
+		}
+		else
+			perror("fork");
+		return (127);
 	}
 
-	exec_from_path(argv, envp);
+	return (exec_from_path(argv, envp));
 }
