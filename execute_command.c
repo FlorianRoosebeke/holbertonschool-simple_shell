@@ -41,23 +41,28 @@ int exec_cmd(char *cmd, char **argv, char **envp)
 int exec_from_path(char **argv, char **envp)
 {
 	char full_path[1024], **paths;
-	int i = 0, status;
+	int i = 0, status, found = 0;
 	pid_t pid;
 
 	paths = get_path(envp);
+
+	while (paths && paths[i])
+	{
+		snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
+		if (access(full_path, X_OK) == 0)
+		{
+			found = 1;
+			break;
+		}
+		i++;
+	}
+
 	pid = fork();
 	if (pid == 0)
 	{
-		while (paths && paths[i])
-		{
-			snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
-			if (access(full_path, X_OK) == 0)
-				execve(full_path, argv, envp);
-			i++;
-		}
+		if (found)
+			execve(full_path, argv, envp);
 		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-		if (paths)
-			free(paths[0]), free(paths);
 		exit(127);
 	}
 	else if (pid > 0)
