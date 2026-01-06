@@ -26,6 +26,7 @@ void execute_command(char *line, char **envp)
 	}
 
 	paths = get_path(envp);
+	i = 1;
 	while (paths[i])
 	{
 		snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
@@ -42,11 +43,13 @@ void execute_command(char *line, char **envp)
 				wait(&status);
 			else
 				perror("fork");
+			free(paths[0]);
 			free(paths);
 			return;
 		}
 		i++;
 	}
 	printf("%s: command not found\n", argv[0]);
+	free(paths[0]);
 	free(paths);
 }

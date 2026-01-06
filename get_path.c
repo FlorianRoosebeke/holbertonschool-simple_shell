@@ -35,6 +35,8 @@ char **get_path(char **envp)
 		i++;
 	}
 
+	tokens[0] = path_copy;
+	j = 1;
 	token = strtok(path_copy, delimiters);
 	while (token != NULL && j < 127)
 	{
@@ -43,6 +45,5 @@ char **get_path(char **envp)
 		j++;
 	}
 	tokens[j] = NULL;
-	free(path_copy);
 	return (tokens);
 }
