@@ -14,7 +14,7 @@ char **get_path(char **envp)
 {
 
 	int i = 0, j = 0;
-	char *path_copy, *delimiters = "=:", *token, **tokens;
+	char *path_copy = NULL, *delimiters = "=:", *token, **tokens;
 
 	tokens = malloc(sizeof(char *) * 128);
 	if (tokens == NULL)
@@ -33,6 +33,12 @@ char **get_path(char **envp)
 			break;
 		}
 		i++;
+	}
+
+	if (path_copy == NULL)
+	{
+		free(tokens);
+		return (NULL);
 	}
 
 	tokens[0] = path_copy;
