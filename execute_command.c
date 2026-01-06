@@ -56,6 +56,8 @@ int exec_from_path(char **argv, char **envp)
 			i++;
 		}
 		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+		if (paths)
+			free(paths[0]), free(paths);
 		exit(127);
 	}
 	else if (pid > 0)
