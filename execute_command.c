@@ -45,6 +45,8 @@ int exec_from_path(char **argv, char **envp)
 	pid_t pid;
 
 	paths = get_path(envp);
+	if (paths == NULL)
+		free(paths);
 
 	while (paths && paths[i])
 	{
