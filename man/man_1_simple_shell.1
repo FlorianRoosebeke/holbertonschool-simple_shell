@@ -1,0 +1,77 @@
+.TH HSH 1 "January 2026" "Version 1.0" "Simple Shell Manual"
+.SH NAME
+hsh \- simple command line interpreter
+.SH SYNOPSIS
+.B hsh
+.SH DESCRIPTION
+.B hsh
+is a simple UNIX command line interpreter (shell) that reads commands from standard input and executes them. It is a minimalist implementation of a shell program designed as part of the Holberton School curriculum.
+.SH USAGE
+The shell works in both interactive and non-interactive mode. In interactive mode, it displays a prompt and waits for the user to type a command. The prompt is displayed as "$ ".
+.PP
+Commands can be executed in the following ways:
+.RS
+.IP \[bu] 2
+By absolute or relative path (e.g., /bin/ls or ./program)
+.IP \[bu]
+By command name, which will be searched in the directories listed in the PATH environment variable
+.RE
+.SH COMMAND EXECUTION
+The shell searches for and executes commands in the following order:
+.RS
+.IP 1. 3
+Built-in commands (exit, env)
+.IP 2.
+If the command contains a '/', it is treated as a path and executed directly if it exists and is executable
+.IP 3.
+The command is searched in the directories specified in the PATH environment variable
+.RE
+.SH BUILT-IN COMMANDS
+.TP
+.B exit
+Exits the shell. No arguments are required.
+.TP
+.B env
+Prints the current environment variables, one per line.
+.SH ENVIRONMENT
+The shell uses the following environment variables:
+.TP
+.B PATH
+Colon-separated list of directories to search for commands.
+.SH EXIT STATUS
+The shell returns the exit status of the last command executed. Commands that are not found return an exit status of 127.
+.SH EXAMPLES
+Interactive mode:
+.RS
+.nf
+$ /bin/ls
+file1 file2 file3
+$ ls -l
+total 40
+-rw-r--r-- 1 user user 1234 Jan 7 10:00 file1
+$ pwd
+/home/user
+$ exit
+$
+.fi
+.RE
+.PP
+Non-interactive mode:
+.RS
+.nf
+$ echo "/bin/ls" | ./hsh
+file1 file2 file3
+$ echo "pwd" | ./hsh
+/home/user
+.fi
+.RE
+.SH SIGNAL HANDLING
+The shell handles SIGINT (Ctrl+C) by displaying a new prompt instead of terminating.
+.SH RETURN VALUE
+The shell returns the exit status of the last executed command. If EOF is reached (Ctrl+D), the shell exits with the status of the last command.
+.SH AUTHORS
+Written as part of the Holberton School Simple Shell project.
+TOM VIEILLEDENT
+FLORIAN ROOSEBEKE
+.SH SEE ALSO
+sh(1), bash(1), execve(2), fork(2), wait(2)
