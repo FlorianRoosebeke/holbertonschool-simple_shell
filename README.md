@@ -85,43 +85,51 @@ total 40
 
 ```mermaid
 flowchart TD
-    Start([START]) --> Loop((LOOP INFINI))
+    Start([START]) --> Loop((INFINITE LOOP))
 
-    Loop --> Prompt[Affiche '$']
-    Prompt --> Read[Lit commande]
+    Loop --> Prompt[Display '$']
+    Prompt --> Read[Read command]
     Read --> EOF{EOF?}
 
-    EOF -->|Oui| End([FIN])
-    EOF -->|Non| Check{Commande vide?}
+    EOF -->|Yes| End([END])
+    EOF -->|No| Check{Empty command?}
 
-    Check -->|Oui| Loop
-    Check -->|Non| Exit{exit?}
+    Check -->|Yes| Loop
+    Check -->|No| Exit{exit?}
 
-    Exit -->|Oui| End
-    Exit -->|Non| Env{env?}
+    Exit -->|Yes| End
+    Exit -->|No| Env{env?}
 
-    Env -->|Oui| Print[Affiche variables]
+    Env -->|Yes| Print[Print environment variables]
     Print --> Loop
 
-    Env -->|Non| Path{Avec / ?}
+    Env -->|No| Path{Contains / ?}
 
-    Path -->|Oui| Abs[Chemin absolu]
-    Path -->|Non| Search[Cherche dans PATH]
+    Path -->|Yes| Abs[Absolute path]
+    Path -->|No| Search[Search in PATH]
 
     Abs --> Exec[fork + execve]
-    Search --> Found{Trouvé?}
+    Search --> Found{Found?}
 
-    Found -->|Oui| Exec
-    Found -->|Non| Error[Erreur: not found]
+    Found -->|Yes| Exec
+    Found -->|No| Error[Error: command not found]
 
     Exec --> Loop
     Error --> Loop
 
-    style Start fill:#90EE90
-    style End fill:#FFB6C1
-    style Loop fill:#87CEEB
-    style Exec fill:#FFD700
-    style Error fill:#FF6B6B
+    %% Styles (high contrast & readable)
+    style Start fill:#4CAF50,color:#000,stroke:#2E7D32,stroke-width:2px
+    style End fill:#E57373,color:#000,stroke:#C62828,stroke-width:2px
+    style Loop fill:#64B5F6,color:#000,stroke:#1E88E5,stroke-width:2px
+    style Exec fill:#FFD54F,color:#000,stroke:#F9A825,stroke-width:2px
+    style Error fill:#EF5350,color:#000,stroke:#B71C1C,stroke-width:2px
+
+    style EOF fill:#ECEFF1,color:#000,stroke:#90A4AE
+    style Check fill:#ECEFF1,color:#000,stroke:#90A4AE
+    style Exit fill:#ECEFF1,color:#000,stroke:#90A4AE
+    style Env fill:#ECEFF1,color:#000,stroke:#90A4AE
+    style Path fill:#ECEFF1,color:#000,stroke:#90A4AE
+    style Found fill:#ECEFF1,color:#000,stroke:#90A4AE
 ```
 
 
@@ -147,6 +155,7 @@ $
 ## Authors
 
 Tom Vieilledent(https://github.com/tomvieilledent)
+
 Florian Roosebeke(https://github.com/FlorianRoosebeke)
 
 ## Man Page
