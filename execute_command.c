@@ -65,6 +65,8 @@ int exec_from_path(char **argv, char **envp)
 		if (found)
 			execve(full_path, argv, envp);
 		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+		if (paths)
+			free(paths[0]), free(paths);
 		exit(127);
 	}
 	else if (pid > 0)
@@ -76,7 +78,11 @@ int exec_from_path(char **argv, char **envp)
 			return (WEXITSTATUS(status));
 	}
 	else
+	{
+		if (paths)
+			free(paths[0]), free(paths);
 		perror("fork");
+	}
 	return (127);
 }
 
@@ -90,8 +96,6 @@ int exec_from_path(char **argv, char **envp)
 int execute_command(char *line, char **envp)
 {
 	char *argv[1024];
-	pid_t pid;
-	int status;
 
 	if (splitCommand(line, argv) == 0)
 		return (0);
@@ -111,20 +115,7 @@ int execute_command(char *line, char **envp)
 	{
 		if (access(argv[0], X_OK) == 0)
 			return (exec_cmd(argv[0], argv, envp));
-		pid = fork();
-		if (pid == 0)
-		{
-			fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-			exit(127);
-		}
-		else if (pid > 0)
-		{
-			wait(&status);
-			if (WIFEXITED(status))
-				return (WEXITSTATUS(status));
-		}
-		else
-			perror("fork");
+		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
 		return (127);
 	}
 
