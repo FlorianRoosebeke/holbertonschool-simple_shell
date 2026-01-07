@@ -45,8 +45,6 @@ int exec_from_path(char **argv, char **envp)
 	pid_t pid;
 
 	paths = get_path(envp);
-	if (paths == NULL)
-		free(paths);
 
 	while (paths && paths[i])
 	{
@@ -65,8 +63,6 @@ int exec_from_path(char **argv, char **envp)
 		if (found)
 			execve(full_path, argv, envp);
 		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-		if (paths)
-			free(paths[0]), free(paths);
 		exit(127);
 	}
 	else if (pid > 0)
