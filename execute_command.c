@@ -5,11 +5,10 @@
  * @cmd: Command path to execute
  * @argv: Arguments array
  * @envp: Environment variables
- * @line_ptr: Pointer to line buffer (to free in child)
  *
  * Return: Exit status of the command
  */
-int exec_cmd(char *cmd, char **argv, char **envp, char **line_ptr)
+int exec_cmd(char *cmd, char **argv, char **envp)
 {
 	pid_t pid;
 	int status;
@@ -19,8 +18,6 @@ int exec_cmd(char *cmd, char **argv, char **envp, char **line_ptr)
 	{
 		execve(cmd, argv, envp);
 		perror("Error");
-		if (*line_ptr)
-			free(*line_ptr);
 		exit(127);
 	}
 	else if (pid > 0)
@@ -38,11 +35,10 @@ int exec_cmd(char *cmd, char **argv, char **envp, char **line_ptr)
  * exec_from_path - Searches and executes command from PATH
  * @argv: Arguments array
  * @envp: Environment variables
- * @line_ptr: Pointer to line buffer (to free in child)
  *
  * Return: Exit status of the command, or 127 if not found
  */
-int exec_from_path(char **argv, char **envp, char **line_ptr)
+int exec_from_path(char **argv, char **envp)
 {
 	char full_path[1024], **paths = get_path(envp);
 	int i = 0, status;
@@ -65,8 +61,6 @@ int exec_from_path(char **argv, char **envp, char **line_ptr)
 	pid = fork();
 	if (pid == 0)
 	{
-		if (*line_ptr)
-			free(*line_ptr);
 		if (paths)
 			free(paths[0]), free(paths);
 		execve(full_path, argv, envp);
@@ -81,12 +75,11 @@ int exec_from_path(char **argv, char **envp, char **line_ptr)
 /**
  * execute_command - Forks and executes a command using execve.
  * @line: The command line to execute.
- * @line_ptr: Pointer to line buffer (to free in child)
  * @envp: Environment variables.
  *
  * Return: Exit status of the command
  */
-int execute_command(char *line, char **line_ptr, char **envp)
+int execute_command(char *line, char **envp)
 {
 	char *argv[1024];
 
@@ -107,10 +100,10 @@ int execute_command(char *line, char **line_ptr, char **envp)
 	if (strchr(argv[0], '/') != NULL)
 	{
 		if (access(argv[0], X_OK) == 0)
-			return (exec_cmd(argv[0], argv, envp, line_ptr));
+			return (exec_cmd(argv[0], argv, envp));
 		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
 		return (127);
 	}
 
-	return (exec_from_path(argv, envp, line_ptr));
+	return (exec_from_path(argv, envp));
 }
