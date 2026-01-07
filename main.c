@@ -31,7 +31,7 @@ int main(int argc, char **argv, char **envp)
 		if (clean_line(line, r) == 0)
 			continue;
 
-		last_status = execute_command(line, &line, envp);
+		last_status = execute_command(line, envp);
 	}
 
 	free(line);
