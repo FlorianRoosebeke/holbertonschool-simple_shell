@@ -83,6 +83,48 @@ total 40
 6. Executes the command using `fork()` and `execve()`
 7. Returns to step 1
 
+```mermaid
+flowchart TD
+    Start([START]) --> Loop((LOOP INFINI))
+
+    Loop --> Prompt[Affiche '$']
+    Prompt --> Read[Lit commande]
+    Read --> EOF{EOF?}
+
+    EOF -->|Oui| End([FIN])
+    EOF -->|Non| Check{Commande vide?}
+
+    Check -->|Oui| Loop
+    Check -->|Non| Exit{exit?}
+
+    Exit -->|Oui| End
+    Exit -->|Non| Env{env?}
+
+    Env -->|Oui| Print[Affiche variables]
+    Print --> Loop
+
+    Env -->|Non| Path{Avec / ?}
+
+    Path -->|Oui| Abs[Chemin absolu]
+    Path -->|Non| Search[Cherche dans PATH]
+
+    Abs --> Exec[fork + execve]
+    Search --> Found{Trouvé?}
+
+    Found -->|Oui| Exec
+    Found -->|Non| Error[Erreur: not found]
+
+    Exec --> Loop
+    Error --> Loop
+
+    style Start fill:#90EE90
+    style End fill:#FFB6C1
+    style Loop fill:#87CEEB
+    style Exec fill:#FFD700
+    style Error fill:#FF6B6B
+```
+
+
 ## Examples
 
 ```bash
@@ -104,7 +146,8 @@ $
 
 ## Authors
 
-Written as part of the Holberton School Simple Shell project.
+Tom Vieilledent
+Florian Roosebeke
 
 ## Man Page
 
