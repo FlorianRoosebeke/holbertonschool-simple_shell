@@ -45,7 +45,6 @@ int exec_from_path(char **argv, char **envp)
 	pid_t pid;
 
 	paths = get_path(envp);
-
 	while (paths && paths[i])
 	{
 		snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
@@ -56,13 +55,14 @@ int exec_from_path(char **argv, char **envp)
 		}
 		i++;
 	}
-
 	pid = fork();
 	if (pid == 0)
 	{
 		if (found)
 			execve(full_path, argv, envp);
 		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+		if (paths)
+			free(paths[0]), free(paths);
 		exit(127);
 	}
 	else if (pid > 0)
@@ -73,12 +73,8 @@ int exec_from_path(char **argv, char **envp)
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 	}
-	else
-	{
-		if (paths)
-			free(paths[0]), free(paths);
-		perror("fork");
-	}
+	if (paths)
+		free(paths[0]), free(paths);
 	return (127);
 }
 
