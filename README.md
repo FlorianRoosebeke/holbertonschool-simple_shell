@@ -83,7 +83,7 @@ total 40
 6. Executes the command using `fork()` and `execve()`
 7. Returns to step 1
 
-'''mermaid
+```mermaid
 flowchart TD
     Start([START]) --> Loop((LOOP INFINI))
 
@@ -122,7 +122,8 @@ flowchart TD
     style Loop fill:#87CEEB
     style Exec fill:#FFD700
     style Error fill:#FF6B6B
-'''
+```
+
 
 ## Examples
 
