@@ -146,8 +146,8 @@ $
 
 ## Authors
 
-Tom Vieilledent
-Florian Roosebeke
+Tom Vieilledent(https://github.com/tomvieilledent)
+Florian Roosebeke(https://github.com/FlorianRoosebeke)
 
 ## Man Page
 
