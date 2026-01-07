@@ -44,48 +44,38 @@ int exec_cmd(char *cmd, char **argv, char **envp, char **line_ptr)
  */
 int exec_from_path(char **argv, char **envp, char **line_ptr)
 {
-	char full_path[1024], **paths;
-	int i = 0, status, found = 0;
+	char full_path[1024], **paths = get_path(envp);
+	int i = 0, status;
 	pid_t pid;
 
-	paths = get_path(envp);
 	while (paths && paths[i])
 	{
 		snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], argv[0]);
 		if (access(full_path, X_OK) == 0)
-		{
-			found = 1;
 			break;
-		}
 		i++;
+	}
+	if (!paths || !paths[i])
+	{
+		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+		if (paths)
+			free(paths[0]), free(paths);
+		return (127);
 	}
 	pid = fork();
 	if (pid == 0)
 	{
-		if (found)
-		{
-			if (*line_ptr)
-				free(*line_ptr);
-			execve(full_path, argv, envp);
-		}
-		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
 		if (*line_ptr)
 			free(*line_ptr);
 		if (paths)
 			free(paths[0]), free(paths);
+		execve(full_path, argv, envp);
 		exit(127);
 	}
-	else if (pid > 0)
-	{
-		wait(&status);
-		if (paths)
-			free(paths[0]), free(paths);
-		if (WIFEXITED(status))
-			return (WEXITSTATUS(status));
-	}
+	wait(&status);
 	if (paths)
 		free(paths[0]), free(paths);
-	return (127);
+	return (WIFEXITED(status) ? WEXITSTATUS(status) : 127);
 }
 
 /**
